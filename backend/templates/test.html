@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+
+<head>
+  <meta charset="utf-8">
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.min.css">
+  <link href="http://getbootstrap.com/dist/css/bootstrap-theme.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{url_for('static', filename='namu.css')}}">
+
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  
+  <script type="text/javascript">
+
+      var client;
+      var form = document.getElementById("tutorial");
+      var topic;
+
+      function doConnect() {
+          client = new Paho.MQTT.Client("163.180.117.195", 9001, "myclientid_" + parseInt(Math.random() * 100, 10));
+          client.onConnect = onConnect;
+          client.onMessageArrived = onMessageArrived;
+          client.onConnectionLost = onConnectionLost;
+          client.connect({onSuccess:onConnect});
+
+          $.ajax({
+            type: "GET",
+            url: '/mimic',
+            success: function (msg) {
+            }
+          });
+
+          alert("Connection is successful");
+  }
+  
+  function doSubscribe() {
+      // $.ajax({
+      //   type: "POST",
+      //   url: '/get_id?' + Math.random(),
+      //   cache : false,
+      //   success: function (msg) {
+      //     alert(msg);
+          client.subscribe('test');
+          alert("Subscribe is successful");
+      //   }
+      // });
+  }
+
+  function doDisconnect() {
+      client.disconnect();
+      alert("Disconnection is successful");
+  }
+  
+  // Web Messaging API callbacks
+  
+  function onConnect() {
+      var form = document.getElementById("example");
+      form.connected.checked= true;
+  }
+  
+  function onConnectionLost(responseObject) {
+      var form = document.getElementById("example");
+      form.connected.checked= false;
+      if (responseObject.errorCode !== 0)
+          alert(client.clientId+"\n"+responseObject.errorCode);
+  }
+  
+  function onMessageArrived(message) {
+      var form = document.getElementById("example");
+      var temp = message.payloadString.split('/');
+      document.getElementById('topic').innerHTML = temp[0];
+      document.getElementById('receiveMsg').innerHTML = temp[1];
+  }
+  
+</script>
+</head> 
+
+<body>
+    <div class="container">
+
+          <h1>Messaging Client Web Page</h1>
+          <hr>
+          <form id="example">
+              <fieldset>
+              <h3>Connection to the server</h3>
+                  <button type="button" class="btn btn-primary"  onClick="doConnect(this.form)">연결</button>
+                  <input type="checkbox" name="connected" disabled="disabled"/>
+              </fieldset>
+
+          
+          
+
+          <hr>
+          <fieldset>
+                <h3>Subscribe</h3>
+            
+            <button type='button' class='btn btn-success' onClick="doSubscribe(this.form)">Subscribe</button>
+        </fieldset>
+
+        <hr>
+
+        <fieldset>
+          <h3> 그룹메시지 수신 </h3>
+          <table class="table table-bordered">
+            <tr>
+              <th>Topic</th>
+              <th>Message</th>
+          </tr>
+          <tr>
+              <td id="topic"></td>
+              <td id="receiveMsg"></td>
+          </tr>
+      </table>
+  </fieldset>
+  
+ <hr>
+
+  <fieldset>
+      <h3 > 연결 끊기 </h3>
+      <button type='button' class='btn btn-danger' onClick="doDisconnect()">끊기</button>
+  </fieldset>
+</form>
+</div>
+</body>
+</html>

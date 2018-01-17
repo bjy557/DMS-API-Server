@@ -1,0 +1,5 @@
+DB_HOST = 'mysql://root:asdfasdf@127.0.0.1/netchallenge'
+InfluxDB_HOST = '127.0.0.1'
+InfluxDB_DBNAME = 'monitoring'
+CENTRAL_CLOUD_HOST = 'http://163.180.117.45:8080'
+EDGE_NAME = 'seoul'

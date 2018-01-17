@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Group Message</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='namu.css')}}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="{{url_for('static', filename='namu.js')}}"></script>
+    
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/highcharts-more.js"></script>
+    <script src="http://code.highcharts.com/modules/solid-gauge.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header clearfix">
+            <a href="#" class="navbar-left"><img width="100px" height="100px" style="margin-right:5px;" src="{{url_for('static', filename='logo.gif')}}"></a>
+            <h3 class="text-muted">메시징 클러스터 현황</h3>
+            <h3 class="text-muted">엣지 클라우드 DashBoard</h3>
+
+            <div class='btn-toolbar pull-right'>
+                <div class='btn-group'>
+                    <button type='button' class='btn btn-default' data-toggle="modal" data-target="#autoscale" onclick="get_autoscale_setting()">Auto Scaling 설정</button>
+                </div>
+
+                <div class='btn-group'>
+                    <button type='button' class='btn btn-default' data-toggle="modal" data-target="#testsetting">데모 클라이언트 추가</button>
+                </div>
+                <dic class='btn-group'>
+                    <button type="button" class="btn btn-danger" onclick="abort_test()">테스트 중단</button>
+                </dic>
+                <dic class='btn-group'>
+                    <button type="button" class="btn btn-primary" onclick="start_test()">테스트 시작</button>
+                </dic>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="testsetting" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">테스트 클라이언트 설정</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="새로 생성할 클라이언트 수" id="clients_amount"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="add_clients()">추가</button>
+            </div>
+          </div>
+
+        </div>
+        </div>
+
+                <!-- Modal -->
+        <div class="modal fade" id="autoscale" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Auto Scaling 정책 설정</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    CPU Threashold (%)<br/>
+                    <input type="text" class="form-control" placeholder="CPU Threshold(%)" id="cpu_threshold"/>
+                </div>
+                <div class="form-group">
+                    지속 시간 (초) <br/>
+                    <input type="text" class="form-control" placeholder="지속 시간(초)" id="threshold_period"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal" onclick="autoscale_setting()">적용</button>
+            </div>
+          </div>
+
+        </div>
+        </div>
+
+
+        <div class="page-header">
+            <h3>브로커 목록</h3>
+        </div>
+        <div class="row marketing">
+            <div class="col-lg-12">
+                <div class="row">
+                    <table id="broker_list" class="table table-bordered table-hover">
+
+                    </table>
+                </div>
+            </div>
+            <div style="width: 1100px; height: 250px; margin: 0 auto">
+                <div id="container-speed" style="width: 250px; height: 200px; float: left"></div>
+                <div id="container-rpm" style="width: 250px; height: 200px; float: left"></div>
+                <div id="container-speed2" style="width: 250px; height: 200px; margin-left: 100px; float: left"></div>
+                <div id="container-rpm2" style="width: 250px; height: 200px; float: left"></div>
+            </div>
+         </div>
+
+        <div class="page-header">
+            <div class='btn-toolbar pull-right'>
+                <div class='btn-group'>
+                    <button type='button' class='btn btn-danger' onclick="delete_clients()">초기화</button>
+                </div>
+                <div class='btn-group'>
+                    <button type='button' class='btn btn-success' data-toggle="modal" data-target="#myModal">메세지 전송하기</button>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">그룹 메세지 발송</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="토픽명을 적어주세요" id="msg_topic"/>
+                    </div>
+                    <div class="form-group">
+                        <textarea type="text" style="resize: none;" class="form-control" width="200px" placeholder="메세지를 적어주세요" id="msg_body"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-success" data-dismiss="modal" onclick="send_message()">전송</button>
+                </div>
+              </div>
+
+            </div>
+            </div>
+
+            <h3>클라이언트 목록 ( {{ clients|length }} )</h3>
+        </div>
+         <div class="row marketing">
+            <div class="col-lg-12">
+                <div class="row">
+                    <table id="client_list" class="table table-bordered table-hover">
+                    <tr>
+                        <td>선택</td>
+                        <td>클라이언트 ID</td>
+                        <td>브로커 ID</td>
+                        <td>최근 연결 시간</td>
+                    </tr>
+                    {% for client in clients %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="client" value="{{client.client_mqtt_id}}"/>
+                            </td>
+                            <td>
+                                {{client.client_mqtt_id}}
+                            </td>
+                            <td id="{{client.client_mqtt_id}}">
+                                {{client.brokers_id}}
+                            </td>
+                            <td>
+                                {{client.last_connected}}
+                            </td>
+                        </tr>
+                    {% endfor%}
+                    </table>
+                </div>
+            </div>
+         </div>
+
+          <footer class="footer">
+            <p>&copy; 2017 Kyunghee University, ICNS Lab.</p>
+          </footer>
+    </div>
+
+</body>
+</html>

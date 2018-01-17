@@ -1,0 +1,67 @@
+<html>
+<head>
+<title>Image Gallery</title>
+<style>
+body {
+background-color:#FFFFFF;
+color:#000000;
+font-family:Arial;
+font-size:11pt;
+letter-spacing:1;
+}
+.thumbnail {
+border:1px solid #000000;
+}
+.thumbSelected {
+border:1px solid #000000;
+}
+</style>
+
+<script language=javascript>
+var lastID = 0;
+function SelectImg(id) {
+if (lastID > 0) {
+document.getElementById(lastID).className = "thumbnail";
+}
+document.getElementById(id).className = "thumbSelected";
+document.getElementById(0).src = document.getElementById(id).src;
+lastID = id;
+}
+function LoadTrigger() {
+SelectImg(1);
+}
+window.onload = LoadTrigger;
+</script>
+
+</head>
+
+<body>
+<center>
+<br>
+<b>Naver Design Internship Reference_Suhyun Lim</b>
+<br>
+<br>
+<b>Click on a thumbnail to view it full size.</b>
+<br>
+<br>
+<br>
+<br>
+<table cellpadding="0" cellspacing="0">
+<tr>
+<td align="center" valign="top">
+<img id=1 class="thumbnail" src="{{url_for('static', filename='first.gif')}}" width=140 onclick="SelectImg(1)">
+<img id=2 class="thumbnail" src="{{url_for('static', filename='second.gif')}}" width=140 onclick="SelectImg(2)">
+<br>
+<img id=3 class="thumbnail" src="{{url_for('static', filename='third.gif')}}" width=140 onclick="SelectImg(3)">
+<img id=4 class="thumbnail" src="{{url_for('static', filename='fourth.gif')}}" width=140 onclick="SelectImg(4)"> 
+</td>
+<td width="10">
+</td>
+<td align="center" valign="top">
+<img id=0 src="">
+</td>
+</tr>
+</table>
+</center>
+</body>
+</html>
